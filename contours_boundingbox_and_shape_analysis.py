@@ -58,5 +58,15 @@ plt.title('Image with Centers of Mass')
 plt.show()
 
 
+#displaying bounding box
+for cnt in contours:
+    x, y, w, h = cv2.boundingRect(cnt)  #cv2.boundingRect(cnt) computes the bounding rectangle for the contour cnt. x and y are the coordinates of the top-left corner of the rectangle. w and h are the width and height of the rectangle, respectively.
+    cv2.rectangle(image_with_contours, (x, y), (x + w, y + h), (0, 255, 0), 2) #cv2.rectangle() draws a rectangle on image_with_contours.(x, y) is the top-left corner, and (x + w, y + h) is the bottom-right corner of the rectangle.(0, 255, 0) is the color of the rectangle in BGR format (green in this case).2 is the thickness of the rectangle border
+
+# Display the image with bounding boxes
+plt.imshow(cv2.cvtColor(image_with_contours, cv2.COLOR_BGR2RGB))
+plt.title('Image with Bounding Boxes')
+plt.show()
+
 
 
