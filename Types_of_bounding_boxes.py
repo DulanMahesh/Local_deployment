@@ -29,8 +29,37 @@ for cnt in contours:
 
 # Display the image with bounding boxes
 plt.imshow(cv2.cvtColor(image_with_contours, cv2.COLOR_BGR2RGB))# converts the image from BGR (used by OpenCV) to RGB (used by Matplotlib).
-plt.title('Image with Bounding Boxes')
+plt.title('Image with Bounding Boxes') ;plt.axis('off')
 plt.show()
 
 
+# verticalbounding box
+image_verticalbounding_box = image.copy()
+for cnt in contours:
+    x, y, w, h = cv2.boundingRect(cnt)
+    cv2.rectangle(image_verticalbounding_box, (x, y), (x+w, y+h), (0, 255, 0), 4)
+plt.imshow(image_verticalbounding_box[:,:,::-1]);
+plt.title('Image with vertical bounding Boxes');plt.axis('off')
+plt.show()
 
+#rotated bounding box
+
+
+image_rotated_bounding_box = image.copy()
+
+# Iterate through each contour detected in the image
+for cnt in contours:
+    # Find the minimum area rectangle that can fit around the contour
+    box = cv2.minAreaRect(cnt) #  cv2.minAreaRect(cnt) calculates the minimum area rectangle that can fit around the contour (cnt). This rectangle is rotated, meaning it can have an angle relative to the horizontal axis.
+
+    # Get the four corners of the rectangle as integers
+    boxPts = np.int_(cv2.boxPoints(box)) # cv2.boxPoints(box) computes the four corners of the rotated rectangle (box) as floating-point coordinates. np.int_() converts these coordinates to integers, which are required by cv2.drawContours().
+
+    # Draw the contour of the rectangle on the copied image
+    cv2.drawContours(image_rotated_bounding_box, [boxPts], -1, (0, 255, 0), 4) #  'cv2.drawContours()' draws contours on image_rotated_bounding_box. [boxPts]: A list containing the points of the contour (in this case, the rotated rectangle).-1: Indicates drawing all contours in the list ([boxPts]).
+
+# Display the image with matplotlib
+plt.imshow(image_rotated_bounding_box[:, :, ::-1])  # Convert BGR to RGB for display
+plt.title('Image with rotated bounding Boxes')
+plt.axis('off')
+plt.show()
