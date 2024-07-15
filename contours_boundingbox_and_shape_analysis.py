@@ -22,7 +22,7 @@ plt.subplot(132);plt.imshow(gray_image, cmap='gray');plt.title('Grayscale Image'
 
 
 # Apply thresholding to get a binary image
-_, binary_image = cv2.threshold(gray_image, 127, 255, cv2.THRESH_BINARY)
+_, binary_image = cv2.threshold(gray_image, 200, 255, cv2.THRESH_BINARY)
 
 # Display the binary image
 plt.subplot(133);plt.imshow(binary_image, cmap='gray');plt.title('Binary Image');plt.axis('off')

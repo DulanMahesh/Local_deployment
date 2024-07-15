@@ -12,7 +12,7 @@ gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 plt.figure(figsize=[20,10])
 
 # Apply thresholding to get a binary image
-_, binary_image = cv2.threshold(gray_image, 127, 255, cv2.THRESH_BINARY)
+_, binary_image = cv2.threshold(gray_image, 200, 255, cv2.THRESH_BINARY)
 
 
 # Find contours in the binary image
