@@ -92,8 +92,8 @@ imageElipse = image.copy()
 
 # Iterate through each contour detected in the image
 for cnt in contours:
-    # Fit an ellipse only if the contour has at least 5 points
-    if len(cnt) < 5:
+    # Fit an ellipse only if the contour has at least 5 points . however if  you want to have contours with less than 5 points you could code it to have a bounding rectangle instead inside the "if" statement.
+    if len(cnt) < 5:    # This condition checks if the contour has fewer than 5 points. An ellipse cannot be fitted to fewer than 5 points, so the code skips any contours that do not meet this requirement.
         continue
     ellipse = cv2.fitEllipse(cnt)
     # Draw the ellipse on the copied image
