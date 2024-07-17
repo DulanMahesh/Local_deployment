@@ -75,26 +75,30 @@ while True:
         """here sorted()gives the erorded contours from small contour to larger. but since we need the large contour first, we enable the 'reverse =True' """
 
         # Contour area of the largest contour
-        contour_area_max = cv2.contourArea(contours_sorted[0])
+        contour_area_max = cv2.contourArea(contours_sorted[0]) # cv2.contourArea computes the area of a contour. Here, contours_sorted[0] refers to the largest contour, which is the first element in the sorted list of contours (contours_sorted). This list is sorted in descending order based on the contour area.
 
         # Compute the fraction of total frame area occupied by the largest contour
         contour_frac = contour_area_max / frame_area
+        """here calculates the fraction of the total frame area that is occupied by the largest contour. 
+        The total frame area (frame_area) is computed as the product of the frame's width and height (frame_w * frame_h). Dividing the area of the largest contour by the total frame area gives  the proportion 
+        of the frame occupied by this contour."""
+
 
         # Check if the contour fraction is greater than the minimum threshold
-        if contour_frac > min_contour_area_thresh:
+        if contour_frac > min_contour_area_thresh: # To filter out small, insignificant contours that might be false positives we checks whether the (contour_frac) is greater than a predefined threshold (min_contour_area_thresh).
             # Compute bounding rectangle for the top N largest contours
-            for idx in range(min(max_contours, len(contours_sorted))):
-                xc, yc, wc, hc = cv2.boundingRect(contours_sorted[idx])
-                if idx == 0:
+            for idx in range(min(max_contours, len(contours_sorted))): #  This loop iterates through the top N largest contours, where N is defined by max_contours. The function min(max_contours, len(contours_sorted)) ensures that we do not attempt to access more contours than are available in the contours_sorted list.
+                xc, yc, wc, hc = cv2.boundingRect(contours_sorted[idx]) # cv2.boundingRect calculates the bounding rectangle for a given contour. This function returns the coordinates of the top-left corner of the rectangle (xc, yc) and the width wc and height hc of the rectangle.
+                if idx == 0:    # For the first contour (that is, idx == 0), the bounding rectangle coordinates are initialized. x1 and y1 represent the top-left corner, and x2 and y2 represent the bottom-right corner of the rectangle.
                     x1 = xc
                     y1 = yc
                     x2 = xc + wc
                     y2 = yc + hc
-                else:
-                    x1 = min(x1, xc)
-                    y1 = min(y1, yc)
-                    x2 = max(x2, xc + wc)
-                    y2 = max(y2, yc + hc)
+                else:         #For each of these subsequent contours, the coordinates of the overall bounding rectangle are adjusted to make sure it covers not just the current contour, but also all previous contours that have been processed. This is done by comparing the current contour's bounding rectangle with the existing bounding rectangle and adjusting the boundaries if necessary.
+                    x1 = min(x1, xc) # Adjust x1 if the new contour's xc is less than current x1
+                    y1 = min(y1, yc) # Adjust y1 if the new contour's yc is less than current y1
+                    x2 = max(x2, xc + wc) # Adjust x2 if the new contour's xc + wc is greater than current x2
+                    y2 = max(y2, yc + hc) # Adjust y2 if the new contour's yc + hc is greater than current y2
 
             # Draw bounding rectangle for the top N contours on the output frame
             cv2.rectangle(frame, (x1, y1), (x2, y2), yellow, thickness=2)
