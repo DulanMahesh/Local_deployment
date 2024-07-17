@@ -72,6 +72,7 @@ while True:
     if len(contours_erode) > 0:
         # Sort contours based on area
         contours_sorted = sorted(contours_erode, key=cv2.contourArea, reverse=True)
+        """here sorted()gives the erorded contours from small contour to larger. but since we need the large contour first, we enable the 'reverse =True' """
 
         # Contour area of the largest contour
         contour_area_max = cv2.contourArea(contours_sorted[0])
