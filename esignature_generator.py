@@ -1,5 +1,5 @@
-
 import cv2
+import numpy as np
 import matplotlib.pyplot as plt
 
 # Read the image
@@ -46,17 +46,18 @@ else:
         plt.title('Alpha Mask')
         plt.show()
 
-        # Create a blue mask for the signature
-        blue_mask = sig.copy()
-        blue_mask[:, :] = (255, 0, 0)
-        plt.imshow(blue_mask[:, :, ::-1])
-        plt.title('Blue Mask')
-        plt.show()
+        # Enhance the blue channel of the signature and zero out other channels
+        enhanced_blue = np.clip(sig[:, :, 0] * 2, 0, 255).astype(np.uint8)
+        zero_channel = np.zeros_like(enhanced_blue)
+        enhanced_sig = cv2.merge((enhanced_blue, zero_channel, zero_channel))
 
-        # Blend the original signature with the blue mask
-        sig_color = cv2.addWeighted(sig, 1, blue_mask, 0.5, 0)
+        # Create a white background mask
+        white_mask = np.ones_like(enhanced_sig) * 255
+
+        # Blend the enhanced signature with the white mask
+        sig_color = cv2.addWeighted(enhanced_sig, 1, white_mask, 0, 0)
         plt.imshow(sig_color[:, :, ::-1])
-        plt.title('Color Signature with Blue Mask')
+        plt.title('Enhanced Blue Signature with White Background')
         plt.show()
 
         # Split the color channels from the blended image
@@ -75,6 +76,3 @@ else:
 
         # Save the transparent signature as a PNG file
         cv2.imwrite('extracted_sig.png', png)
-
-
-
