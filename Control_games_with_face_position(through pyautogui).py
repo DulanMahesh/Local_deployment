@@ -1,3 +1,34 @@
+#workflow
+
+"""Key Points:
+Imports:
+
+cv2 for computer vision tasks.
+numpy for numerical operations.
+pyautogui for simulating keyboard and mouse actions.
+time for time-related functions.
+play Function:
+
+1.Captures video, processes frames, and performs actions based on face detection.
+detect Function:
+
+2.Uses the pre-trained model to detect faces in each frame.
+drawFace Function:
+
+3.Draws rectangles around detected faces for visualization.
+checkRect Function:
+
+4.Checks if a detected face is within a predefined bounding box.
+move Function:
+
+5.Simulates keyboard movements based on the position of the detected face relative to the bounding box.
+Main Loop:
+
+6. Continuously captures frames, detects faces, processes movements, and displays the video feed with annotations."""
+
+
+
+
 import cv2
 import numpy as np
 import pyautogui as gui
