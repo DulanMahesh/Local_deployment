@@ -3,67 +3,78 @@ import numpy as np
 import pyautogui as gui
 import time
 
-# Set keypress delay to 0.
+# Set keypress delay to 0 seconds for pyautogui to make keypresses instantaneous.
 gui.PAUSE = 0
 
-# Loading the pre-trained face model.
+# Paths to the pre-trained face detection model and its configuration file.
 model_path = './model/res10_300x300_ssd_iter_140000.caffemodel'
 prototxt_path = './model/deploy.prototxt'
 
 
 def play(prototxt_path, model_path):
     '''
-    Run the main loop until cancelled.
+    Run the main loop for capturing video and processing face detection.
     '''
+    # Open the video capture stream from the default webcam.
     cap = cv2.VideoCapture(1)
 
-    # Getting the Frame width and height.
+    # Get the width and height of the frames captured by the webcam.
     frame_width, frame_height = int(cap.get(3)), int(cap.get(4))
 
-    # Co-ordinates of the bounding box on frame
+    # Define the bounding box coordinates centered in the frame.
     left_x, top_y = frame_width // 2 - 150, frame_height // 2 - 200
     right_x, bottom_y = frame_width // 2 + 150, frame_height // 2 + 200
     bbox = [left_x, right_x, bottom_y, top_y]
 
+    # Ensure the video capture is open before starting the loop.
     while not cap.isOpened():
         cap = cv2.VideoCapture(1)
 
     while True:
+        # Read a frame from the webcam.
         ret, frame = cap.read()
         if not ret:
-            return 0
+            return 0  # Exit if no frame is read.
 
+        # Flip the frame horizontally for a mirror effect.
         frame = cv2.flip(frame, 1)
-        # To be added: Detecting and drawing bounding box around faces
 
-        # Drawing the control rectangle in the center of the frame.
+        # To be implemented: Detect faces and draw bounding boxes.
+        # Draw the control rectangle on the frame.
         frame = cv2.rectangle(
             frame, (left_x, top_y), (right_x, bottom_y), (0, 0, 255), 5)
-        # To be added: Checking for game-start position, and checking to run keyboard press.
-        # Exit the loop on pressing the `esc` key.
+
+        # Check if the `esc` key is pressed to exit the loop.
         k = cv2.waitKey(5)
         if k == 27:
             return
 
+
+# Load the pre-trained face detection model from the Caffe framework.
 net = cv2.dnn.readNetFromCaffe(prototxt_path, model_path)
+
 
 def detect(net, frame):
     '''
-    Detect the faces in the frame.
+    Detect faces in the frame.
 
-    returns: list of faces in the frame
-                here each face is a dictionary of format-
-                {'start': (startX,startY), 'end': (endX,endY), 'confidence': confidence}
+    returns: list of detected faces, each represented as a dictionary
+             with 'start' (x, y) and 'end' (x, y) coordinates and 'confidence'.
     '''
     detected_faces = []
     (h, w) = frame.shape[:2]
+
+    # Prepare the frame for the face detection model.
     blob = cv2.dnn.blobFromImage(
-        cv2.resize(frame, (300, 300)),
-        1.0,
-        (300, 300),
-        (104.0, 177.0, 123.0))
+        cv2.resize(frame, (300, 300)),  # Resize the frame to 300x300.
+        1.0,  # Scale factor.
+        (300, 300),  # Size of the input image.
+        (104.0, 177.0, 123.0))  # Mean subtraction values.
+
     net.setInput(blob)
-    detections = net.forward()
+    detections = net.forward()  # Perform the forward pass to detect faces.
+
+    # Iterate over detected faces and filter based on confidence level.
     for i in range(0, detections.shape[2]):
         confidence = detections[0, 0, i, 2]
         if confidence > 0.5:
@@ -75,21 +86,23 @@ def detect(net, frame):
                 'confidence': confidence})
     return detected_faces
 
+
 def drawFace(frame, detected_faces):
     '''
-    Draw rectangular box over detected faces.
+    Draw rectangular boxes around detected faces.
 
-    returns: frame with rectangular boxes over detected faces.
+    returns: frame with rectangles drawn around detected faces.
     '''
     for face in detected_faces:
         cv2.rectangle(frame, face['start'], face['end'], (0, 255, 0), 10)
     return frame
 
+
 def checkRect(detected_faces, bbox):
     '''
-    Check for a detected face inside the bounding box at the center of the frame.
+    Check if any detected face is inside the defined bounding box.
 
-    returns: True or False.
+    returns: True if any face is inside the bounding box, otherwise False.
     '''
     for face in detected_faces:
         x1, y1 = face['start']
@@ -99,96 +112,90 @@ def checkRect(detected_faces, bbox):
                 return True
     return False
 
+
 def move(detected_faces, bbox):
     '''
-    Press correct button depending on the position of detected face and bbox.
+    Simulate keypresses based on the position of detected faces relative to the bounding box.
 
-    The last_mov check is added for making sure the character doesn't keep
-    drifting in the previous detection.
+    The last_mov variable ensures that the character doesn't keep drifting in the same direction
+    after the face moves out of the bounding box.
     '''
     global last_mov
     for face in detected_faces:
         x1, y1 = face['start']
         x2, y2 = face['end']
 
-        # Center
+        # Check if face is inside the bounding box.
         if checkRect(detected_faces, bbox):
             last_mov = 'center'
             return
 
         elif last_mov == 'center':
-            # Left
+            # Determine direction of movement based on face position.
             if x1 < bbox[0]:
                 gui.press('left')
                 last_mov = 'left'
-            # Right
             elif x2 > bbox[1]:
                 gui.press('right')
                 last_mov = 'right'
-            # Down
             if y2 > bbox[2]:
                 gui.press('down')
                 last_mov = 'down'
-            # Up
             elif y1 < bbox[3]:
                 gui.press('up')
                 last_mov = 'up'
 
-            # Print out the button pressed if any.
+            # Print the last movement direction.
             if last_mov != 'center':
                 print(last_mov)
 
+
 def play(prototxt_path, model_path):
     '''
-    Run the main loop until cancelled.
+    Main loop for capturing video, detecting faces, and controlling based on face position.
     '''
     global last_mov
-    # Used to record the time when we processed last frame.
-    prev_frame_time = 0
-    # Used to record the time at which we processed current frame.
-    new_frame_time = 0
+    prev_frame_time = 0  # Time of the previous frame processing.
+    new_frame_time = 0  # Time of the current frame processing.
 
     net = cv2.dnn.readNetFromCaffe(prototxt_path, model_path)
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(1)  # Open the video capture stream.
 
-    # Counter for skipping frame.
-    count = 0
+    count = 0  # Frame counter.
+    init = 0  # Initialization flag.
 
-    # Used to initialize the game.
-    init = 0
-
-    # Getting the Frame width and height.
+    # Get the frame width and height.
     frame_width, frame_height = int(cap.get(3)), int(cap.get(4))
 
-    # Co-ordinates of the bounding box on frame
+    # Define the coordinates of the bounding box centered in the frame.
     left_x, top_y = frame_width // 2 - 150, frame_height // 2 - 200
     right_x, bottom_y = frame_width // 2 + 150, frame_height // 2 + 200
     bbox = [left_x, right_x, bottom_y, top_y]
 
+    # Ensure the video capture is open before starting the loop.
     while not cap.isOpened():
         cap = cv2.VideoCapture(1)
 
     while True:
-        fps = 0
+        fps = 0  # Initialize FPS counter.
         ret, frame = cap.read()
-
         if not ret:
-            return 0
+            return 0  # Exit if no frame is read.
 
-        frame = cv2.flip(frame, 1)
-        # Detect the face.
+        frame = cv2.flip(frame, 1)  # Flip the frame horizontally.
+
+        # Detect faces in the frame.
         detected_faces = detect(net, frame)
-        # Draw bounding box around detected faces.
+        # Draw bounding boxes around detected faces.
         frame = drawFace(frame, detected_faces)
-        # Drawing the control rectangle in the center of the frame.
+        # Draw the control rectangle on the frame.
         frame = cv2.rectangle(
             frame, (left_x, top_y), (right_x, bottom_y), (0, 0, 255), 5)
 
-        # Skipping every alternate frame.
+        # Skip every alternate frame to reduce processing load.
         if count % 2 == 0:
-            # For first pass.
+            # For the first pass, check if the face is inside the control rectangle.
             if init == 0:
-                # If face is inside the control rectangle.
                 if checkRect(detected_faces, bbox):
                     init = 1
                     cv2.putText(
@@ -199,10 +206,11 @@ def play(prototxt_path, model_path):
                     # Click to start the game.
                     gui.click(x=500, y=500)
             else:
-
+                # Simulate keypresses based on face position.
                 move(detected_faces, bbox)
                 cv2.waitKey(50)
-        # Calculating the FPS.
+
+        # Calculate and display FPS.
         new_frame_time = time.time()
         fps = int(1 / (new_frame_time - prev_frame_time))
         prev_frame_time = new_frame_time
@@ -218,7 +226,7 @@ def play(prototxt_path, model_path):
         if k == 27:
             return
 
-# Used to pass the previous move of the user to the play() function.
-last_mov = ''
-play(prototxt_path, model_path)
 
+# Variable to store the last movement direction.
+last_mov = ''
+play(prototxt_path, model_path)  # Start the main loop.
