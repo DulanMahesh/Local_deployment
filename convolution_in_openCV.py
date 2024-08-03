@@ -8,7 +8,7 @@ kernel_size = 5
 kernel = np.ones((kernel_size, kernel_size), dtype=np.float32) / kernel_size ** 2
 
 # Perform convolution
-filename = 'kitten.jpg'  # Ensure this file is in your project directory or provide the correct path
+filename = 'kitten.jpg'  # Ensure this file is in our project directory or provide the correct path
 image = cv2.imread(filename)
 
 # Check if the image was loaded properly
