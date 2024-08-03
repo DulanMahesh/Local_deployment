@@ -77,5 +77,24 @@ plt.subplot(236); plt.axis('off'); plt.imshow(img2_blur);      plt.title('Blurre
 plt.show()
 
 #Perform edge detection using blurred images
+blurred_edges_1 = cv2.Canny(img1_blur, threshold1 = 180, threshold2 = 200)
+blurred_edges_2 = cv2.Canny(img2_blur, threshold1 = 180, threshold2 = 200)
 
+# Display.
+plt.figure(figsize = (18,12))
+plt.subplot(221); plt.axis('off'); plt.imshow(original_edges_1); plt.title('Edges without blur')
+plt.subplot(222); plt.axis('off'); plt.imshow(blurred_edges_1);  plt.title('Edges with blur')
+plt.subplot(223); plt.axis('off'); plt.imshow(original_edges_2); plt.title('Edges without blur')
+plt.subplot(224); plt.axis('off'); plt.imshow(blurred_edges_2);  plt.title('Edges with blur');
+plt.show()
 
+#thresholding Example (effect of Threshold1)
+ #Edge detection with a high Threshold1 value.
+blurred_edges_tight = cv2.Canny(img1_blur, threshold1 = 180, threshold2 = 200)
+# Edge detection with a low Threshold1 value.
+blurred_edges_open  = cv2.Canny(img1_blur, threshold1 = 50, threshold2 = 200)
+
+plt.figure(figsize = (20,15))
+plt.subplot(121); plt.axis('off'); plt.imshow(blurred_edges_tight); plt.title('Threshold1 = 180, Threshold2 = 200')
+plt.subplot(122); plt.axis('off'); plt.imshow(blurred_edges_open);  plt.title('Threshold1 = 50, Threshold2 = 200');
+plt.show()
