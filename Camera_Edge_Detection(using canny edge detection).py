@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 
+
 # Capture video from the default camera (0)
 source = cv2.VideoCapture(0)
 
@@ -36,7 +37,7 @@ while True:
     if image_filter == PREVIEW:
         result = frame
     elif image_filter == CANNY:
-        result = cv2.Canny(frame, 30, 150)
+        result = cv2.Canny(frame, 30, 100)
     elif image_filter == EMBOSS:
         result = cv2.filter2D(frame, -1, kernel_emboss)
 
