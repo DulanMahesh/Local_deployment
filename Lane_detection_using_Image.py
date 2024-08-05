@@ -1,8 +1,15 @@
 import cv2
 import numpy as np
 
+#highlevel steps for Lane detection using hough transform in images
+#1--->Create a threshold for lane lines -This is done using cv2.inRange on the grayscale image.
+#2.--->selecting region of interest-using cv2.fillpoly()
+#3.--->Detecting edges using canny edge detector(cv2.canny)
+#4.--->Extrapolate the lanes from the lines found -(Lines are detected using the Hough Transform and then extrapolated).
+#5.--->composite the result on the original frame (The extrapolated lanes are combined with the original image)
 
-# Function to calculate average.
+
+# Function to calculate average of a list of values.The average calculation is used in the function extrapolate_lines, where it helps in determining the average slope and y-intercept of the detected lines. This is critical for accurately drawing a single, continuous lane line that represents multiple detected line segments.
 def cal_avg(values):
     """Calculate average value."""
     if not (type(values) == 'NoneType'):
@@ -13,7 +20,7 @@ def cal_avg(values):
         return sum(values) / n
 
 
-# Function to draw lines.
+# Function to draw lines on an image using OpenCV's cv2.line.
 def draw_lines(img, lines, color=[255, 0, 0], thickness=2):
     """Utility for drawing lines."""
     if lines is not None:
@@ -22,7 +29,7 @@ def draw_lines(img, lines, color=[255, 0, 0], thickness=2):
                 cv2.line(img, (x1, y1), (x2, y2), color, thickness)
 
 
-# Function to separate left-right lines.
+# Function to  Separate lines into left and right based on the slope.
 def separate_left_right_lines(lines):
     """ Separate left and right lines depending on the slope. """
     left_lines = []
@@ -37,7 +44,7 @@ def separate_left_right_lines(lines):
     return left_lines, right_lines
 
 
-# Function to extrapolate lines.
+# Function to  Extrapolate detected lines to span the region of interest.
 def extrapolate_lines(lines, upper_border, lower_border):
     """Extrapolate lines keeping in mind the lower and upper border intersections."""
     slopes = []
@@ -60,7 +67,7 @@ def extrapolate_lines(lines, upper_border, lower_border):
 
     return [x_lane_lower_point, lower_border, x_lane_upper_point, upper_border]
 
-
+##Main Scrpit --Load and display the input image
 if __name__ == "__main__":
 
     # Reading the image.
@@ -70,7 +77,7 @@ if __name__ == "__main__":
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-    # Convert to grayscale.
+    # Convert to grayscale
     gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
 
     # Use global threshold based on grayscale intensity.
@@ -116,7 +123,7 @@ if __name__ == "__main__":
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-    # Perform Edge Detection.
+    # Perform Edge Detection using the Canny algorithm
     low_threshold = 50
     high_threshold = 100
     edges = cv2.Canny(roi, low_threshold, high_threshold)
@@ -133,7 +140,7 @@ if __name__ == "__main__":
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-    # Hough transform parameters set according to the input image.
+    # Hough line detection -Hough transform parameters set according to the input image.purpose is to Detect lines using the Hough Transform and draw them on a blank image.
     rho = 1
     theta = np.pi / 180
     threshold = 50
@@ -152,6 +159,7 @@ if __name__ == "__main__":
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
+    # Extrapolate and draw lines - whole purpose is to Separate detected lines into left and right, then extrapolate and draw them.
     # Define bounds of the region of interest.
     roi_upper_border = 340
     roi_lower_border = 540
@@ -168,7 +176,7 @@ if __name__ == "__main__":
     draw_lines(lanes_img, [[lane_left]], thickness=10)
     draw_lines(lanes_img, [[lane_right]], thickness=10)
 
-    # Display results.
+    # Display results- purpose of this code snippet is to Combine the original image with the detected and extrapolated lanes for visualization.
     # Following step is optional and only used in the script for display convenience.
     hough1 = cv2.resize(hough, None, fx=0.5, fy=0.5)
     lanes_img1 = cv2.resize(lanes_img, None, fx=0.5, fy=0.5)
