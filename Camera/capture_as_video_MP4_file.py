@@ -2,7 +2,7 @@ import cv2
 import sys
 
 # Set the video source (default is 0, which is the default webcam)
-s = 0
+s = 1
 if len(sys.argv) > 1:
     s = sys.argv[1]
 
@@ -35,12 +35,15 @@ while True:
     if not has_frame:
         break
 
-    # Display the current frame
-    cv2.imshow(win_name, frame)
+    # Flip the frame horizontally
+    flipped_frame = cv2.flip(frame, 1)
 
-    # If currently recording, write the frame to the video file
+    # Display the current flipped frame
+    cv2.imshow(win_name, flipped_frame)
+
+    # If currently recording, write the flipped frame to the video file
     if recording:
-        out.write(frame)
+        out.write(flipped_frame)
 
     # Wait for 1 millisecond for a key press
     key = cv2.waitKey(1)

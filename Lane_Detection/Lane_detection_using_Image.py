@@ -8,6 +8,51 @@ import numpy as np
 #4.--->Extrapolate the lanes from the lines found -(Lines are detected using the Hough Transform and then extrapolated).
 #5.--->composite the result on the original frame (The extrapolated lanes are combined with the original image)
 
+"""
+Lane Detection Pipeline Steps
+# Create a Threshold for Lane Lines
+
+Purpose: To filter out noise and focus on the relevant lane line colors in the image.
+Method:
+Convert the image to a different color space (e.g., HSV or LAB) that helps isolate the colors of the lane markings (usually white or yellow).
+Apply color thresholding to create a binary mask, where pixels corresponding to lane colors are white (255) and others are black (0).
+
+# Selecting Region of Interest (ROI)
+
+Purpose: To limit the area of the image where lane lines are detected, which reduces computational load and focuses on the road.
+Method:
+Define a polygonal region that corresponds to the area where the lanes are expected to be (typically the lower part of the image).
+Create a mask for this region, applying it to the binary image from the previous step to isolate lane lines in the desired area.
+
+# Detecting Edges using Canny Edge Detector
+
+Purpose: To highlight the edges in the image that correspond to the lane markings.
+Method:
+Use the Canny Edge Detection algorithm, which detects edges by looking for areas of rapid intensity change.
+The process involves applying Gaussian blur to smooth the image, then using gradient operators to find edges and non-maximum suppression to thin them out.
+
+# Fit Lines using Hough Line Transform
+
+Purpose: To detect straight lines in the edge-detected image, which represent the lane markings.
+Method:
+Apply the Hough Line Transform algorithm, which converts the points in the edge-detected image into lines in Hough space.
+This method uses a voting procedure to find the most likely lines based on the detected edges. The parameters can be adjusted to fine-tune the detection (e.g., minimum length of lines, distance between points).
+
+# Extrapolate the Lanes from Lines Found
+
+Purpose: To create a clear lane representation from the detected lines.
+Method:
+For each detected line, extrapolate (extend) it to the top and bottom of the image to ensure that the lanes are drawn from the bottom (where the vehicle is) to the top of the image.
+This may involve calculating the slope and intercept of each line and using those to determine the endpoints for drawing.
+
+# Composite the Result with the Original Frame
+
+Purpose: To visualize the detected lane markings over the original image.
+Method:
+Create a copy of the original image and draw the extrapolated lane lines onto it using a specified color (usually green or yellow for visibility).
+The final output is an image that shows the original scene with the detected lanes highlighted.
+"""
+
 
 # Function to calculate average of a list of values.The average calculation is used in the function extrapolate_lines, where it helps in determining the average slope and y-intercept of the detected lines. This is critical for accurately drawing a single, continuous lane line that represents multiple detected line segments.
 def cal_avg(values):
