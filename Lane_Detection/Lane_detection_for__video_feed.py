@@ -203,7 +203,7 @@ def process_image(image):
     # Apply Hough Transform to detect lines.
     hough, lines = hough_lines(canny_blur, 1, np.pi / 180, 100, 50, 300)
 
-    # Extrapolate the lane lines and combine them into one image.
+    # Extend the lane lines and combine them into one image.
     lane_img = extrapolated_lane_image(image, lines, 330, 540)
 
     # Overlay the lane lines on the original image.
