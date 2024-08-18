@@ -17,8 +17,8 @@ else:
     plt.show()
 
     # Define crop indices (adjust these if necessary)
-    crop_y1, crop_y2 = 100, 380
-    crop_x1, crop_x2 = 150, 780
+    crop_y1, crop_y2 = 220, 380
+    crop_x1, crop_x2 = 50, 480
 
     # Check if crop indices are within the image dimensions
     if crop_y2 > sig_org.shape[0] or crop_x2 > sig_org.shape[1]:
