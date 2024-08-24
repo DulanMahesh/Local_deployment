@@ -1,3 +1,6 @@
+
+"""The main idea of this project is to map a source image (like a photo or an ad) onto a specific area in a destination image """
+
 import cv2
 import numpy as np
 
