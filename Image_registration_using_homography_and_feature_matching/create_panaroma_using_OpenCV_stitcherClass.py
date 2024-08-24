@@ -43,7 +43,7 @@ if status == 0:
 
 plt.figure(figsize = [20,10])
 plt.imshow(panorama)
-cropped_region = panorama[90:867, 1:2000]
+cropped_region = panorama[90:867, 1:2000] #y =90:867 , x =1:2000
 plt.imshow(cropped_region);
 plt.title("panaroma striched & cropped_region")
 plt.show()
