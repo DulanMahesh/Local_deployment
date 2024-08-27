@@ -16,12 +16,15 @@ class_names = image_net_names[:-1]
 print(len(class_names), class_names[0])
 
 # Step 2: Load the Pre-trained DenseNet121 Model
-# The model configuration (.prototxt) and pre-trained weights (.caffemodel) are loaded from disk.
+# The model configuration (.prototxt) and pre-trained weights (.caffemodel) are loaded from hard disk.
 config_file = 'models/DenseNet_121.prototxt'  # Configuration file that defines the network structure
 model_file = 'models/DenseNet_121.caffemodel'  # Pre-trained weights for the network
 
 # Read the network into memory using OpenCV's dnn module.
 model = cv2.dnn.readNet(model=model_file, config=config_file, framework='Caffe')
+
+
+"""
 
 # Step 3: Load the Image to be Classified
 # Load an image from disk that will be passed through the network for classification.
@@ -72,6 +75,7 @@ out_text = f"{out_name}, {final_prob:.3f}%"  # Format the output as "Class Name,
 cv2.imshow(str(out_text), tiger_img)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
+"""
 
 # Step 8: Define a Function to Classify an Image
 # This function allows the classification process to be reused for multiple images.
