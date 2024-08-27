@@ -1,10 +1,10 @@
 import cv2
 import numpy as np
 
-# Initialize the video capture object to use the default camera (usually the webcam).
-# The argument '0' typically refers to the default camera. It can be replaced with a different integer for other cameras.
-s = 0  # Use the default web camera.
-video_cap = cv2.VideoCapture(1)
+# Initialize the video capture object to use the default camera
+
+s = 1  # Use the default web camera.
+video_cap = cv2.VideoCapture(s)
 
 # Define the window name where the camera feed will be displayed.
 win_name = 'Camera Preview'
